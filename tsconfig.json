@@ -3,6 +3,9 @@
     "target": "ES6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": ".",
+    "paths": {
+      "@styles/*": ["src/styles/*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -15,7 +18,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }
