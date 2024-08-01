@@ -7,5 +7,5 @@
 }
 
 .modalcontent {
-  @apply bg-white p-6 rounded-lg shadow-lg z-50;
+  @apply z-50;
 }

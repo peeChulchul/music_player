@@ -12,7 +12,6 @@ function Login({ setIsLoginPage }: IloginProps) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isValid },
   } = useForm<IloginFormInput>({ mode: "onChange" });
 

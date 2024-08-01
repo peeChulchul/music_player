@@ -8,7 +8,12 @@ function AuthModal() {
   const [isLoginPage, setIsLoginPage] = useState<boolean>(true);
 
   return (
-    <div className={styles.modalcontent}>
+    <div
+      className={[
+        styles.modalcontent,
+        "bg-white p-6 rounded-lg shadow-lg",
+      ].join(" ")}
+    >
       {isLoginPage && <Login setIsLoginPage={setIsLoginPage} />}
       {!isLoginPage && <Signup setIsLoginPage={setIsLoginPage} />}
     </div>

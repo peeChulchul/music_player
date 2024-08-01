@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./screen/Home";
 import AddMusicZone from "./screen/AddMusicZone";
@@ -7,26 +6,36 @@ import DetailMusicZone from "./screen/DetailMusicZone";
 import Layout from "./screen/Layout";
 import { supabase } from "./service/client";
 import useSessionStore from "./store/sessionStore";
+import { getAllTable } from "./service/tableService";
+import FullPageLoading from "./components/ui/FullPageLoading";
+import useloadingStore from "./store/loadingStore";
 
 function Router() {
-  const { setSession } = useSessionStore();
+  const { session, setSession, setUserTable, clerSession } = useSessionStore();
+  const { closeLoading } = useloadingStore();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        setSession(session);
+        closeLoading();
+
+        if (event === "SIGNED_IN") {
+          getAllTable({
+            eqKey: "id",
+            eqValue: session!.user.id,
+            tableName: "user",
+          }).then((rows: any[]) => {
+            setUserTable(rows[0]);
+            setSession(session);
+          });
+          return;
+        }
+        if (event === "SIGNED_OUT") {
+          clerSession();
+          return;
+        }
       }
     );
-
-    const fetchSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-      console.log(session);
-    };
-
-    fetchSession();
 
     return () => {
       authListener?.subscription.unsubscribe();
@@ -35,6 +44,7 @@ function Router() {
 
   return (
     <BrowserRouter>
+      {/* <FullPageLoading /> */}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />

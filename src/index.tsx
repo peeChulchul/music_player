@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ModalContainer from "./components/modal/ModalContainer";
 import "src/index.css";
+import FullPageLoading from "./components/ui/FullPageLoading";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -15,6 +16,7 @@ const queryClient = new QueryClient();
 root.render(
   <QueryClientProvider client={queryClient}>
     <ModalContainer />
+    <FullPageLoading />
     <App />
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>

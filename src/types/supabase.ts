@@ -52,6 +52,7 @@ export type Database = {
           id: string;
           title: string;
           user_id: string | null;
+          zone_name: string;
         };
         Insert: {
           background_image_url?: string | null;
@@ -60,6 +61,7 @@ export type Database = {
           id?: string;
           title: string;
           user_id?: string | null;
+          zone_name: string;
         };
         Update: {
           background_image_url?: string | null;
@@ -68,6 +70,7 @@ export type Database = {
           id?: string;
           title?: string;
           user_id?: string | null;
+          zone_name?: string;
         };
         Relationships: [
           {
@@ -208,3 +211,7 @@ export type Enums<
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
     : never;
+
+export type UserRow = Database["public"]["Tables"]["user"]["Row"];
+
+export type AllTables = keyof PublicSchema["Tables"];
