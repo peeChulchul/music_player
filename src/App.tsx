@@ -7,8 +7,9 @@ import Layout from "./screen/Layout";
 import { supabase } from "./service/client";
 import useSessionStore from "./store/sessionStore";
 import { getAllTable } from "./service/tableService";
-import FullPageLoading from "./components/ui/FullPageLoading";
+import FullPageLoading from "./components/overlay/FullPageLoading";
 import useloadingStore from "./store/loadingStore";
+import ModalContainer from "./components/overlay/modal/ModalContainer";
 
 function Router() {
   const { session, setSession, setUserTable, clerSession } = useSessionStore();
@@ -44,11 +45,16 @@ function Router() {
 
   return (
     <BrowserRouter>
+      <ModalContainer />
+      <FullPageLoading />
       {/* <FullPageLoading /> */}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path=":userId/addMusicZone" element={<AddMusicZone />} />
+          <Route
+            path="addMusicZone/:userId/:musicZoneId"
+            element={<AddMusicZone />}
+          />
           <Route path=":musicZoneId" element={<DetailMusicZone />} />
         </Route>
       </Routes>

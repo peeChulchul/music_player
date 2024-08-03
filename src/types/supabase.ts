@@ -13,32 +13,35 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
-          music_zone_id: number;
-          thumbnail_url: string | null;
+          index: number | null;
+          music_zone_id: string;
+          thumbnail_url: string;
           title: string;
           track_url: string;
         };
         Insert: {
           created_at?: string;
           id?: string;
-          music_zone_id: number;
-          thumbnail_url?: string | null;
+          index?: number | null;
+          music_zone_id?: string;
+          thumbnail_url?: string;
           title: string;
           track_url: string;
         };
         Update: {
           created_at?: string;
           id?: string;
-          music_zone_id?: number;
-          thumbnail_url?: string | null;
+          index?: number | null;
+          music_zone_id?: string;
+          thumbnail_url?: string;
           title?: string;
           track_url?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "musictrack_id_fkey";
-            columns: ["id"];
-            isOneToOne: true;
+            foreignKeyName: "musictrack_music_zone_id_fkey";
+            columns: ["music_zone_id"];
+            isOneToOne: false;
             referencedRelation: "musiczone";
             referencedColumns: ["id"];
           },
@@ -46,29 +49,26 @@ export type Database = {
       };
       musiczone: {
         Row: {
-          background_image_url: string | null;
           created_at: string;
           description: string | null;
           id: string;
-          title: string;
+          musiczone_img: string;
           user_id: string | null;
           zone_name: string;
         };
         Insert: {
-          background_image_url?: string | null;
           created_at?: string;
           description?: string | null;
           id?: string;
-          title: string;
+          musiczone_img?: string;
           user_id?: string | null;
           zone_name: string;
         };
         Update: {
-          background_image_url?: string | null;
           created_at?: string;
           description?: string | null;
           id?: string;
-          title?: string;
+          musiczone_img?: string;
           user_id?: string | null;
           zone_name?: string;
         };
@@ -215,3 +215,12 @@ export type Enums<
 export type UserRow = Database["public"]["Tables"]["user"]["Row"];
 
 export type AllTables = keyof PublicSchema["Tables"];
+
+export type createTrack = Pick<
+  Tables<"musictrack">,
+  "title" | "thumbnail_url" | "track_url"
+>;
+
+export type trackRow = Database["public"]["Tables"]["musictrack"]["Row"];
+
+export type musicZoneRow = Database["public"]["Tables"]["musiczone"]["Row"];

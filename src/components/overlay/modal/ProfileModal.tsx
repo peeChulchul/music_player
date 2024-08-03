@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import styles from "src/style/modal.module.css";
-import Avatar from "../Avatar";
-import useSessionStore from "../../store/sessionStore";
-import { supabase } from "../../service/client"; // Supabase 클라이언트
-import { getPublicUrl, uploadFile } from "../../service/storageService";
-import { updateTable } from "../../service/tableService";
-import useloadingStore from "../../store/loadingStore";
-import useModalStore from "../../store/modalStore";
+import Avatar from "../../Avatar";
+import useSessionStore from "../../../store/sessionStore";
+import { supabase } from "../../../service/client"; // Supabase 클라이언트
+import { getPublicUrl, uploadFile } from "../../../service/storageService";
+import { updateTable } from "../../../service/tableService";
+import useloadingStore from "../../../store/loadingStore";
+import useModalStore from "../../../store/modalStore";
+import Button from "../../ui/Button";
 
-// 폼 데이터 타입 정의
-type FormValues = {
+interface IformValues {
   username: string;
-};
+}
 
 function ProfileModal() {
   const { userTable, setUserTable } = useSessionStore();
@@ -20,7 +20,7 @@ function ProfileModal() {
     `${userTable?.avatar_url}?${Math.random()}` || null
   );
   const [file, setFile] = useState<File | null>(null);
-  const { register, handleSubmit } = useForm<FormValues>({
+  const { register, handleSubmit } = useForm<IformValues>({
     defaultValues: {
       username: userTable?.username || "",
     },
@@ -28,7 +28,7 @@ function ProfileModal() {
   const { openLoading, closeLoading } = useloadingStore();
   const { closeModal } = useModalStore();
 
-  const onSubmit: SubmitHandler<FormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<IformValues> = async (formData) => {
     const userId = userTable?.id;
     const bucketName = "image";
     const path = `${userId}`;
@@ -126,15 +126,10 @@ function ProfileModal() {
           className="border p-2 rounded"
         />
         <div className="flex w-full justify-between">
-          <button
-            type="submit"
-            className="border p-2 rounded bg-blue-500 text-white"
-          >
-            수정완료
-          </button>
-          <button type="button" className="border p-2 rounded bg-gray-300">
+          <Button>수정완료</Button>
+          <Button type="button" onClick={closeModal}>
             취소
-          </button>
+          </Button>
         </div>
       </form>
     </div>

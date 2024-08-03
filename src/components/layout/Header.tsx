@@ -3,13 +3,14 @@ import {
   UserCircleIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-import useSessionStore from "../store/sessionStore";
-import useModalStore from "../store/modalStore";
-import AuthModal from "./modal/AuthModal";
-import { signOut } from "../service/authService";
-import ProfileModal from "./modal/ProfileModal";
-import Avatar from "./Avatar";
+import useSessionStore from "../../store/sessionStore";
+import useModalStore from "../../store/modalStore";
+import AuthModal from "../overlay/modal/AuthModal";
+import { signOut } from "../../service/authService";
+import ProfileModal from "../overlay/modal/ProfileModal";
+import Avatar from "../Avatar";
 import { useNavigate } from "react-router-dom";
+import MusicZoneModal from "../overlay/modal/MusicZoneModal";
 
 function Header() {
   const [open, setOpen] = useState<boolean>(false);
@@ -17,8 +18,9 @@ function Header() {
   const { openModal } = useModalStore();
   const navigate = useNavigate();
 
-  function onClickCreateZone() {
-    navigate(`${userTable!.id}/addMusicZone`);
+  async function onClickCreateZone() {
+    openModal(<MusicZoneModal />);
+    // navigate(`${userTable!.id}/addMusicZone`);
   }
 
   function onClickProfile() {
