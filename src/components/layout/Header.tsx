@@ -5,12 +5,12 @@ import {
 } from "@heroicons/react/24/outline";
 import useSessionStore from "../../store/sessionStore";
 import useModalStore from "../../store/modalStore";
-import AuthModal from "../overlay/modal/AuthModal";
+import AuthModal from "../overlay/AuthModal";
 import { signOut } from "../../service/authService";
-import ProfileModal from "../overlay/modal/ProfileModal";
+import ProfileModal from "../overlay/ProfileModal";
 import Avatar from "../Avatar";
 import { useNavigate } from "react-router-dom";
-import MusicZoneModal from "../overlay/modal/MusicZoneModal";
+import MusicZoneModal from "../overlay/MusicZoneModal";
 
 function Header() {
   const [open, setOpen] = useState<boolean>(false);
@@ -45,7 +45,7 @@ function Header() {
   }, [open]);
 
   return (
-    <div className="flex py-2 bg-gray-800 items-center pl-2 pr-4 sticky top-0 ml-[40px]">
+    <div className="flex z-10 py-2 bg-gray-800 items-center pl-2 pr-4 sticky top-0 ml-[40px]">
       <form className="flex w-[480px] bg-slate-600 rounded-md overflow-hidden items-center py-1 px-2">
         <input className="flex-1 bg-inherit outline-none" />
         <MagnifyingGlassIcon className="w-5 h-5 rounded cursor-pointer" />
@@ -64,7 +64,7 @@ function Header() {
           id="HeadCateDropdown"
           className={
             open
-              ? "z-10 absolute w-24 bg-white rounded-sm shadow left-0 translate-x-[-100%]"
+              ? "z-20 absolute w-24 bg-white rounded-sm shadow left-0 translate-x-[-100%]"
               : "hidden"
           }
         >

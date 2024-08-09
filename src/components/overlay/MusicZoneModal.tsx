@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import styles from "src/style/modal.module.css";
 import { PhotoIcon } from "@heroicons/react/24/outline";
-import Button from "../../ui/Button";
+import Button from "../ui/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
-import useloadingStore from "../../../store/loadingStore";
-import useSessionStore from "../../../store/sessionStore";
+import useloadingStore from "../../store/loadingStore";
+import useSessionStore from "../../store/sessionStore";
 import {
   createFolder,
   getPublicUrl,
   uploadFile,
-} from "../../../service/storageService";
-import { insertTable, updateTable } from "../../../service/tableService";
+} from "../../service/storageService";
+import { insertTable, updateTable } from "../../service/tableService";
 import { useNavigate } from "react-router-dom";
-import useModalStore from "../../../store/modalStore";
+import useModalStore from "../../store/modalStore";
+import ImageInput from "../ImageInput";
+import { useTrackContext } from "../../store/trackContext";
 
 interface IformValues {
   zone_name: string;
@@ -20,7 +22,6 @@ interface IformValues {
 }
 
 function MusicZoneModal() {
-  const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const { openLoading, closeLoading } = useloadingStore();
   const { userTable } = useSessionStore();
@@ -41,7 +42,6 @@ function MusicZoneModal() {
     const tableData = await insertTable({ tableName, insertValue });
     const folderPath = `${user_id}/${tableData.id}`;
     const fileName = "musiczone_img";
-    console.log(tableData);
 
     await createFolder({ bucketName, path: folderPath });
 
@@ -69,22 +69,9 @@ function MusicZoneModal() {
     }
 
     closeLoading();
-    navigate(`addMusicZone/${user_id}/${tableData.id}`);
+    navigate(`ModifyMusicZone/${user_id}/${tableData.id}`);
     closeModal();
   }
-
-  const ImageChangehandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(selectedFile);
-    }
-  };
 
   return (
     <form
@@ -92,19 +79,14 @@ function MusicZoneModal() {
       className={[styles.modalcontent, "bg-white p-6 flex flex-col"].join(" ")}
     >
       <h1>뮤직존 만들기</h1>
-      <button className="cursor-pointer w-[300px] h-[300px] relative">
-        {preview ? (
-          <img src={preview} className="w-full h-full" />
-        ) : (
-          <PhotoIcon className="text-stone-900 w-full h-full" />
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          className="absolute inset-0 opacity-0 cursor-pointer"
-          onChange={ImageChangehandler}
+      <div className="w-[200px] h-[200px]">
+        <ImageInput
+          setFile={setFile}
+          imagePreview={
+            "https://smydpnzfrremvfutiaro.supabase.co/storage/v1/object/public/image/default/default_music.png"
+          }
         />
-      </button>
+      </div>
       <input
         {...register("zone_name", {
           required: "이름을 입력해주세요",
@@ -114,7 +96,9 @@ function MusicZoneModal() {
       <input {...register("description")} placeholder="설명을 입력해주세요" />
       <div>
         <Button onClick={() => {}}>만들기</Button>
-        <Button onClick={() => {}}>취소</Button>
+        <Button type="button" onClick={closeModal}>
+          취소
+        </Button>
       </div>
     </form>
   );

@@ -11,29 +11,32 @@ export type Database = {
     Tables: {
       musictrack: {
         Row: {
-          created_at: string;
+          artist: string | null;
           id: string;
           index: number | null;
           music_zone_id: string;
           thumbnail_url: string;
+          time: string | null;
           title: string;
           track_url: string;
         };
         Insert: {
-          created_at?: string;
+          artist?: string | null;
           id?: string;
           index?: number | null;
           music_zone_id?: string;
           thumbnail_url?: string;
+          time?: string | null;
           title: string;
           track_url: string;
         };
         Update: {
-          created_at?: string;
+          artist?: string | null;
           id?: string;
           index?: number | null;
           music_zone_id?: string;
           thumbnail_url?: string;
+          time?: string | null;
           title?: string;
           track_url?: string;
         };
@@ -222,5 +225,9 @@ export type createTrack = Pick<
 >;
 
 export type trackRow = Database["public"]["Tables"]["musictrack"]["Row"];
+
+export type trackRowWithFile = trackRow & {
+  file: File | null;
+};
 
 export type musicZoneRow = Database["public"]["Tables"]["musiczone"]["Row"];

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import styles from "src/style/modal.module.css";
-import Avatar from "../../Avatar";
-import useSessionStore from "../../../store/sessionStore";
-import { supabase } from "../../../service/client"; // Supabase 클라이언트
-import { getPublicUrl, uploadFile } from "../../../service/storageService";
-import { updateTable } from "../../../service/tableService";
-import useloadingStore from "../../../store/loadingStore";
-import useModalStore from "../../../store/modalStore";
-import Button from "../../ui/Button";
+import Avatar from "../Avatar";
+import useSessionStore from "../../store/sessionStore";
+import { supabase } from "../../service/client"; // Supabase 클라이언트
+import { getPublicUrl, uploadFile } from "../../service/storageService";
+import { updateTable } from "../../service/tableService";
+import useloadingStore from "../../store/loadingStore";
+import useModalStore from "../../store/modalStore";
+import Button from "../ui/Button";
+import ImageInput from "../ImageInput";
 
 interface IformValues {
   username: string;
@@ -16,9 +17,7 @@ interface IformValues {
 
 function ProfileModal() {
   const { userTable, setUserTable } = useSessionStore();
-  const [preview, setPreview] = useState<string | null>(
-    `${userTable?.avatar_url}?${Math.random()}` || null
-  );
+
   const [file, setFile] = useState<File | null>(null);
   const { register, handleSubmit } = useForm<IformValues>({
     defaultValues: {
@@ -34,6 +33,7 @@ function ProfileModal() {
     const path = `${userId}`;
     const fileName = "avatar_image";
     openLoading();
+
     if (userId) {
       if (file) {
         try {
@@ -81,41 +81,13 @@ function ProfileModal() {
     closeModal();
   };
 
-  // 이미지 선택 및 미리보기
-  const ImageChangehandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(selectedFile);
-    }
-  };
-
   return (
     <div
       className={`${styles.modalcontent} flex flex-col items-center gap-4 bg-white p-6 rounded-lg shadow-lg`}
     >
-      <button className="relative rounded-full border w-[200px] h-[200px] overflow-hidden">
-        {preview ? (
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <Avatar src={userTable?.avatar_url} />
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          className="absolute inset-0 opacity-0 cursor-pointer"
-          onChange={ImageChangehandler}
-        />
-      </button>
+      <div className="w-[200px] h-[200px]">
+        <ImageInput setFile={setFile} imagePreview={userTable!.avatar_url!} />
+      </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col items-center gap-4"

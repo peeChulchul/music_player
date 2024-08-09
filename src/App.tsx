@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./screen/Home";
-import AddMusicZone from "./screen/AddMusicZone";
+import ModifyMusicZone from "./screen/ModifyMusicZone";
 import DetailMusicZone from "./screen/DetailMusicZone";
 import Layout from "./screen/Layout";
 import { supabase } from "./service/client";
 import useSessionStore from "./store/sessionStore";
-import { getAllTable } from "./service/tableService";
+import { getAllTable, getEqTable } from "./service/tableService";
 import FullPageLoading from "./components/overlay/FullPageLoading";
 import useloadingStore from "./store/loadingStore";
-import ModalContainer from "./components/overlay/modal/ModalContainer";
+import ModalContainer from "./components/overlay/ModalContainer";
+import { TrackProvider } from "./store/trackContext";
 
 function Router() {
   const { session, setSession, setUserTable, clerSession } = useSessionStore();
@@ -21,7 +22,7 @@ function Router() {
         closeLoading();
 
         if (event === "SIGNED_IN") {
-          getAllTable({
+          getEqTable({
             eqKey: "id",
             eqValue: session!.user.id,
             tableName: "user",
@@ -52,10 +53,17 @@ function Router() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route
-            path="addMusicZone/:userId/:musicZoneId"
-            element={<AddMusicZone />}
+            path="ModifyMusicZone/:userId/:musicZoneId"
+            element={
+              <TrackProvider>
+                <ModifyMusicZone />
+              </TrackProvider>
+            }
           />
-          <Route path=":musicZoneId" element={<DetailMusicZone />} />
+          <Route
+            path="DetailMusicZone/:musicZoneId"
+            element={<DetailMusicZone />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

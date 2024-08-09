@@ -1,40 +1,51 @@
-import React, { useState } from "react";
-import { trackRow } from "../../types/supabase";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { trackRow, trackRowWithFile } from "../../types/supabase";
 import TrackItem from "./TrackItem";
-import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import useModalStore from "../../store/modalStore";
-interface ItrackListProps {
-  tracks: trackRow[];
-}
+import { useTrackContext } from "../../store/trackContext";
 
-function TrackList({ tracks }: ItrackListProps) {
-  const [trackList, setTrackList] = useState<trackRow[]>(tracks);
-  const { openModal } = useModalStore();
-
+function TrackList() {
+  const { setTrackList, trackList } = useTrackContext();
+  const sensors = useSensors(
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
-    console.log(event);
     if (!over) return;
-
     if (active.id !== over.id) {
       setTrackList((items) => {
         const oldIndex = items.findIndex((tracks) => tracks.id === active.id);
         const newIndex = items.findIndex((tracks) => tracks.id === over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
+        const newTrackList = arrayMove(items, oldIndex, newIndex).map(
+          (track, index) => ({ ...track, index })
+        );
+        return newTrackList;
       });
     }
   };
 
   return (
     <div>
-      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+      <DndContext
+        sensors={sensors}
+        onDragEnd={handleDragEnd}
+        collisionDetection={closestCenter}
+      >
         <SortableContext
           items={trackList}
           strategy={verticalListSortingStrategy}
@@ -44,7 +55,6 @@ function TrackList({ tracks }: ItrackListProps) {
           ))}
         </SortableContext>
       </DndContext>
-      <button onClick={() => {}}>리스트 추가</button>
     </div>
   );
 }
