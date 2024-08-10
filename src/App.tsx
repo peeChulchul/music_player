@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import Home from "./screen/Home";
 import ModifyMusicZone from "./screen/ModifyMusicZone";
 import DetailMusicZone from "./screen/DetailMusicZone";
 import Layout from "./screen/Layout";
+import ModalContainer from "./components/portal/ModalContainer";
+import FullPageLoading from "./components/portal/FullPageLoading";
+
 import { supabase } from "./service/client";
-import useSessionStore from "./store/sessionStore";
-import { getAllTable, getEqTable } from "./service/tableService";
-import FullPageLoading from "./components/overlay/FullPageLoading";
+import { getEqTable } from "./service/tableService";
+
 import useloadingStore from "./store/loadingStore";
-import ModalContainer from "./components/overlay/ModalContainer";
 import { TrackProvider } from "./store/trackContext";
+import useSessionStore from "./store/sessionStore";
 
 function Router() {
-  const { session, setSession, setUserTable, clerSession } = useSessionStore();
+  const { setSession, setUserTable, clerSession } = useSessionStore();
   const { closeLoading } = useloadingStore();
 
   useEffect(() => {
@@ -48,7 +51,6 @@ function Router() {
     <BrowserRouter>
       <ModalContainer />
       <FullPageLoading />
-      {/* <FullPageLoading /> */}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />

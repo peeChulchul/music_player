@@ -6,10 +6,10 @@ import MusicBar from "../components/layout/MusicBar";
 
 function Layout() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen w-full bg-main-bg text-text-primary  flex flex-col">
       <Header />
-      <Sidebar />
-      <div className="ml-[40px] mb-[56px] flex-1 flex">
+      {/* <Sidebar /> */}
+      <div className="mb-[56px] flex-1 flex">
         <Outlet />
       </div>
       <MusicBar />

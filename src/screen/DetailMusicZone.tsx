@@ -5,6 +5,7 @@ import { getEqTable } from "../service/tableService";
 import { musicZoneRow, trackRow } from "../types/supabase";
 import useloadingStore from "../store/loadingStore";
 import usePlayingMusicStore from "../store/playingMusicStore";
+import MusicZoneHeader from "../components/MusicZoneHeader";
 
 interface IfetchMusicZoneTableResult {
   musicZoneData: musicZoneRow;
@@ -57,6 +58,7 @@ function DetailMusicZone() {
         className="w-[240px] h-[240px]"
         src={data?.musicZoneData.musiczone_img}
       />
+      <MusicZoneHeader />
 
       {data?.trackData.map((track, index) => (
         <div

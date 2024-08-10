@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import styles from "src/style/modal.module.css";
-import { PhotoIcon } from "@heroicons/react/24/outline";
-import Button from "../ui/Button";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Button, OutlineButton } from "../ui/Button";
+import { useForm } from "react-hook-form";
 import useloadingStore from "../../store/loadingStore";
 import useSessionStore from "../../store/sessionStore";
 import {
@@ -14,7 +13,6 @@ import { insertTable, updateTable } from "../../service/tableService";
 import { useNavigate } from "react-router-dom";
 import useModalStore from "../../store/modalStore";
 import ImageInput from "../ImageInput";
-import { useTrackContext } from "../../store/trackContext";
 
 interface IformValues {
   zone_name: string;
@@ -76,9 +74,12 @@ function MusicZoneModal() {
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
-      className={[styles.modalcontent, "bg-white p-6 flex flex-col"].join(" ")}
+      className={[
+        styles.modalcontent,
+        "p-6 flex flex-col rounded-lg shadow-lg justify-center gap-4 min-w-[300px] items-center",
+      ].join(" ")}
     >
-      <h1>뮤직존 만들기</h1>
+      <h1 className="font-bold text-xl">뮤직존 추가</h1>
       <div className="w-[200px] h-[200px]">
         <ImageInput
           setFile={setFile}
@@ -87,18 +88,27 @@ function MusicZoneModal() {
           }
         />
       </div>
-      <input
-        {...register("zone_name", {
-          required: "이름을 입력해주세요",
-        })}
-        placeholder="이름을 입력해주세요"
-      />
-      <input {...register("description")} placeholder="설명을 입력해주세요" />
-      <div>
-        <Button onClick={() => {}}>만들기</Button>
-        <Button type="button" onClick={closeModal}>
+      <div className="flex flex-col w-full gap-2">
+        <input
+          className="p-2 text-sm border rounded-sm text-text-primary"
+          {...register("zone_name", {
+            required: "이름을 입력해주세요",
+          })}
+          placeholder="이름을 입력해주세요"
+        />
+        <textarea
+          className="p-2 text-sm border rounded-sm text-text-primary resize-none"
+          {...register("description")}
+          placeholder="설명을 입력해주세요"
+        />
+      </div>
+      <div className="w-full flex flex-col">
+        <OutlineButton text="text-blue-400" onClick={() => {}}>
+          만들기
+        </OutlineButton>
+        <OutlineButton text="text-red-400" type="button" onClick={closeModal}>
           취소
-        </Button>
+        </OutlineButton>
       </div>
     </form>
   );

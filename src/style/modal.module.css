@@ -1,11 +1,11 @@
 .modalcontainer {
-  @apply fixed inset-0 flex  justify-center items-center;
+  @apply fixed z-50 inset-0 flex  justify-center items-center;
 }
 
 .modaloverlay {
-  @apply fixed inset-0 bg-black opacity-50 cursor-pointer;
+  @apply fixed z-50 inset-0 bg-black opacity-60 cursor-pointer;
 }
 
 .modalcontent {
-  @apply z-50;
+  @apply z-50 bg-layout-dark text-main-bg;
 }

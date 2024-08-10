@@ -4,6 +4,7 @@ import { IsignUpFormInput } from "src/types/auth";
 import styles from "src/style/authForm.module.css";
 import { signUp } from "src/service/authService";
 import useModalStore from "../../store/modalStore";
+import { OutlineButton } from "../ui/Button";
 
 interface IsignUpProps {
   setIsLoginPage: Dispatch<SetStateAction<boolean>>;
@@ -102,7 +103,7 @@ function SignUp({ setIsLoginPage }: IsignUpProps) {
         )}
       </div>
 
-      <div className={styles.input_wrapper}>
+      <div className={[styles.input_wrapper, "mb-2"].join(" ")}>
         <label className={styles.input_label} htmlFor="confirmPassword">
           비밀번호 확인
         </label>
@@ -121,15 +122,14 @@ function SignUp({ setIsLoginPage }: IsignUpProps) {
         )}
       </div>
 
-      <button className={styles.form_button} type="submit" disabled={!isValid}>
-        회원가입
-      </button>
-      <button
+      <OutlineButton type="submit">회원가입</OutlineButton>
+      <OutlineButton
+        text="text-blue-500"
+        border="border-transparent"
         onClick={() => setIsLoginPage(true)}
-        className={styles.form_chage_button}
       >
         로그인
-      </button>
+      </OutlineButton>
     </form>
   );
 }

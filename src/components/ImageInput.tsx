@@ -55,13 +55,13 @@ function ImageInput({ imagePreview, setFile, setImagePreview }: IimageInput) {
       <input
         type="file"
         accept="image/*"
-        className="absolute z-0 inset-0 opacity-0 cursor-pointer"
+        className="absolute  inset-0 opacity-0 cursor-pointer"
         onChange={ImageChangeHandler}
       />
       <img
         ref={imageRef}
         src={preview as string}
-        className="rounded-full z-0 object-cover"
+        className="rounded-full  object-cover"
         draggable={false}
       />
     </button>

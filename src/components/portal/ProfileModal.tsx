@@ -3,12 +3,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import styles from "src/style/modal.module.css";
 import Avatar from "../Avatar";
 import useSessionStore from "../../store/sessionStore";
-import { supabase } from "../../service/client"; // Supabase 클라이언트
 import { getPublicUrl, uploadFile } from "../../service/storageService";
 import { updateTable } from "../../service/tableService";
 import useloadingStore from "../../store/loadingStore";
 import useModalStore from "../../store/modalStore";
-import Button from "../ui/Button";
+import { Button, OutlineButton } from "../ui/Button";
 import ImageInput from "../ImageInput";
 
 interface IformValues {
@@ -83,25 +82,33 @@ function ProfileModal() {
 
   return (
     <div
-      className={`${styles.modalcontent} flex flex-col items-center gap-4 bg-white p-6 rounded-lg shadow-lg`}
+      className={`${styles.modalcontent} flex flex-col items-center gap-4 p-4 min-w-[300px] rounded-lg shadow-lg`}
     >
+      <h1 className="text-main-bg font-bold text-lg">프로필 수정</h1>
       <div className="w-[200px] h-[200px]">
         <ImageInput setFile={setFile} imagePreview={userTable!.avatar_url!} />
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col items-center gap-4"
+        className="flex w-full flex-col gap-4"
       >
         <input
           {...register("username")}
           placeholder="이름을 입력해주세요"
-          className="border p-2 rounded"
+          className="border p-2 rounded text-text-primary "
         />
-        <div className="flex w-full justify-between">
-          <Button>수정완료</Button>
-          <Button type="button" onClick={closeModal}>
+        <div className="flex flex-col w-full justify-between">
+          <OutlineButton text="text-blue-400" border="border-border">
+            수정완료
+          </OutlineButton>
+          <OutlineButton
+            text="text-red-400"
+            border="border-border"
+            type="button"
+            onClick={closeModal}
+          >
             취소
-          </Button>
+          </OutlineButton>
         </div>
       </form>
     </div>

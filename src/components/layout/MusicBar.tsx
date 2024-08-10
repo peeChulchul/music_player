@@ -68,8 +68,10 @@ function MusicBar() {
     setProgress(parseFloat(e.target.value));
   }, []);
 
+  console.log(playList[index]);
+
   return (
-    <div className="fixed z-20 bottom-0 left-0 right-0 bg-gray-800 text-white p-4 flex items-center justify-between">
+    <div className="fixed z-10 bottom-0 left-0 right-0 bg-gray-800 text-white p-4 flex items-center justify-between">
       <div className="flex items-center space-x-4">
         <button
           onClick={() => console.log("Previous")}
@@ -119,10 +121,13 @@ function MusicBar() {
         config={{
           youtube: {
             playerVars: {
-              controls: 0,
+              controls: 1,
               modestbranding: 1,
               rel: 0,
               showinfo: 0,
+              embedOptions: {
+                host: "https://www.youtube-nocookie.com",
+              },
             },
           },
         }}

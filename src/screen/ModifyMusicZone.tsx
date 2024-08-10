@@ -12,7 +12,7 @@ import {
 } from "../service/tableService";
 import { useQuery } from "@tanstack/react-query";
 import TrackList from "../components/track/TrackList";
-import Button from "../components/ui/Button";
+import { Button } from "../components/ui/Button";
 import { v4 } from "uuid";
 import { useTrackContext } from "../store/trackContext";
 import { getPublicUrl, uploadFile } from "../service/storageService";

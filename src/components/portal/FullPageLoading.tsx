@@ -13,12 +13,7 @@ function FullPageLoading() {
         <>
           <div className={styles.modalcontainer}>
             <div className={[styles.modaloverlay, "cursor-wait"].join(" ")} />
-            <div
-              className={[
-                styles.modalcontent,
-                "flex items-center cursor-wait",
-              ].join(" ")}
-            >
+            <div className={"flex items-center cursor-wait z-50"}>
               <svg
                 className="animate-spin h-8 w-8 text-white mr-3"
                 xmlns="http://www.w3.org/2000/svg"

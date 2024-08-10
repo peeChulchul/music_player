@@ -1,17 +1,10 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { trackRow } from "../../types/supabase";
 import ImageInput from "../ImageInput";
 import { useTrackContext } from "../../store/trackContext";
-import ReactPlayer from "react-player";
 import { LinkIcon, CheckIcon } from "@heroicons/react/24/solid";
 import useModalStore from "../../store/modalStore";
-import UrlModal from "../overlay/UrlModal";
+import UrlModal from "../portal/UrlModal";
 
 interface ItrackItemProps {
   track: trackRow;
