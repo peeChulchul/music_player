@@ -1,76 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { trackRow } from "../../types/supabase";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import EditingTrackItme from "./EditingTrackItme";
-import { WrenchIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 interface ItrackItemProps {
   track: trackRow;
-  index: number;
+  imagePreview?: string;
+  setIsEditing?: (value: React.SetStateAction<boolean>) => void;
+  onClickMusicTrack?: (musicZoneId: string, index: number) => void;
 }
 
-function TrackItem({ track, index }: ItrackItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: track.id });
-  const [imagePreview, setImagePreview] = useState<string>(() => {
-    if (track.thumbnail_url.startsWith("data:image")) {
-      return `${track.thumbnail_url}`;
-    } else if (track.thumbnail_url.startsWith("https://")) {
-      return `${track.thumbnail_url}?${Math.random()}`;
+function TrackItem({
+  track,
+  imagePreview,
+  setIsEditing,
+  onClickMusicTrack,
+}: ItrackItemProps) {
+  function PlayMusicHandler() {
+    console.log("플레이!");
+    if (onClickMusicTrack) {
+      onClickMusicTrack(track.music_zone_id, track.index!);
     }
-    return track.thumbnail_url;
-  });
-
-  useEffect(() => {
-    if (track.track_url === "") {
-      setIsEditing(true);
-    }
-  }, []);
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-  const handlePointerDown = (e: React.PointerEvent) => {
-    e.stopPropagation();
-  };
+    return;
+  }
 
   return (
     <div
-      style={style}
-      className={[
-        "border px-4 flex border-gray-300 mb-1 bg-white cursor-grab w-[500px] h-[70px]",
-      ].join(" ")}
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
+      onClick={PlayMusicHandler}
+      className="flex w-full h-[70px] items-center gap-4 "
     >
-      {isEditing && (
-        <EditingTrackItme
-          setIsEditing={setIsEditing}
-          track={track}
-          index={index}
-          imagePreview={imagePreview}
-          setImagePreview={setImagePreview}
+      <img
+        className="w-[50px] h-[50px]"
+        src={imagePreview ? imagePreview : track.thumbnail_url}
+      />
+      <div className="flex-1 flex flex-col gap-1">
+        <h1 className="text-text-primary text-sm">{track.title}</h1>
+        <p className="text-text-secondary text-xs">{track.artist}</p>
+      </div>
+      {setIsEditing && (
+        <PencilSquareIcon
+          className="w-[20px] cursor-pointer"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => setIsEditing(true)}
         />
       )}
-      {!isEditing && (
-        <div className="flex w-full h-full items-center gap-4">
-          <img className="w-[50px] h-[50px]" src={imagePreview} />
-          <div className="flex-1">
-            <h1>{track.title}</h1>
-            <h1>{track.artist}</h1>
-          </div>
-          <WrenchIcon
-            className="w-[50px]"
-            onPointerDown={handlePointerDown}
-            onClick={() => setIsEditing(true)}
-          />
-          {track.time && <p>{track.time}</p>}
-        </div>
-      )}
+      {track.time && <p className="text-sm">{track.time}</p>}
     </div>
   );
 }

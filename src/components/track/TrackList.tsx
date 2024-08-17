@@ -1,11 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { trackRow, trackRowWithFile } from "../../types/supabase";
-import TrackItem from "./TrackItem";
+import React, { Dispatch, SetStateAction } from "react";
 import {
   closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
+  MouseSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -16,13 +15,15 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useTrackContext } from "../../store/trackContext";
+import EditingAbleTrackItem from "./EditingAbleTrackItem";
 
 function TrackList() {
   const { setTrackList, trackList } = useTrackContext();
   const sensors = useSensors(
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
+    useSensor(MouseSensor)
   );
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -40,22 +41,17 @@ function TrackList() {
   };
 
   return (
-    <div>
-      <DndContext
-        sensors={sensors}
-        onDragEnd={handleDragEnd}
-        collisionDetection={closestCenter}
-      >
-        <SortableContext
-          items={trackList}
-          strategy={verticalListSortingStrategy}
-        >
-          {trackList.map((track, index) => (
-            <TrackItem key={track.id} track={track} index={index} />
-          ))}
-        </SortableContext>
-      </DndContext>
-    </div>
+    <DndContext
+      sensors={sensors}
+      onDragEnd={handleDragEnd}
+      collisionDetection={closestCenter}
+    >
+      <SortableContext items={trackList} strategy={verticalListSortingStrategy}>
+        {trackList.map((track, index) => (
+          <EditingAbleTrackItem key={track.id} track={track} index={index} />
+        ))}
+      </SortableContext>
+    </DndContext>
   );
 }
 

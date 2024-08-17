@@ -22,6 +22,10 @@ interface IupsertTableArgs extends ItableArgs {
   onConflict: string;
   upsertValue: any;
 }
+interface IdeleteTableArgs extends ItableArgs {
+  eqKey: string;
+  eqValue: string;
+}
 
 export async function updateTable({
   tableName,
@@ -49,6 +53,22 @@ export async function getEqTable({
     .from(tableName)
     .select("*")
     .eq(eqKey, eqValue);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+export async function getNeqTable({
+  eqKey,
+  eqValue,
+  tableName,
+}: IgetAllTableArgs) {
+  const { data, error } = await supabase
+    .from(tableName)
+    .select("*")
+    .neq(eqKey, eqValue);
 
   if (error) {
     throw new Error(error.message);
@@ -96,5 +116,23 @@ export async function upsertTable({
   if (error) {
     throw new Error(error.message);
   }
+  return data;
+}
+
+export async function deleteTable({
+  tableName,
+  eqKey,
+  eqValue,
+}: IdeleteTableArgs) {
+  const { data, error } = await supabase
+    .from(tableName)
+    .delete()
+    .eq(eqKey, eqValue);
+
+  if (error) {
+    console.error("Error deleting record:", error);
+    return null;
+  }
+
   return data;
 }

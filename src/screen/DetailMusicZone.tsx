@@ -2,14 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getEqTable } from "../service/tableService";
-import { musicZoneRow, trackRow } from "../types/supabase";
+import { musicZoneRow, trackRow, UserRow } from "../types/supabase";
 import useloadingStore from "../store/loadingStore";
 import usePlayingMusicStore from "../store/playingMusicStore";
 import MusicZoneHeader from "../components/MusicZoneHeader";
+import TrackItem from "../components/track/TrackItem";
+import useSessionStore from "../store/sessionStore";
 
 interface IfetchMusicZoneTableResult {
   musicZoneData: musicZoneRow;
   trackData: trackRow[];
+  userData: UserRow;
 }
 
 function DetailMusicZone() {
@@ -19,6 +22,7 @@ function DetailMusicZone() {
     queryKey: ["musicZone", musicZoneId],
     queryFn: fetchMusicZoneTable,
   });
+  const { session } = useSessionStore();
 
   const { selectPlayingMusic, setIsPlaying } = usePlayingMusicStore();
 
@@ -48,33 +52,40 @@ function DetailMusicZone() {
       tableName: "musictrack",
     })) as trackRow[];
 
-    return { musicZoneData: musicZoneData[0], trackData };
+    const userData = (await getEqTable({
+      eqKey: "id",
+      eqValue: musicZoneData[0].user_id!,
+      tableName: "user",
+    })) as UserRow[];
+
+    return {
+      musicZoneData: musicZoneData[0],
+      trackData,
+      userData: userData[0],
+    };
   }
+
+  console.log(data);
 
   if (isLoading) return null;
   return (
-    <div>
-      <img
-        className="w-[240px] h-[240px]"
-        src={data?.musicZoneData.musiczone_img}
+    <div className="flex w-full">
+      <MusicZoneHeader
+        trackLength={data?.trackData.length!}
+        userData={data?.userData!}
+        musicZoneData={data?.musicZoneData!}
       />
-      <MusicZoneHeader />
 
-      {data?.trackData.map((track, index) => (
-        <div
-          onClick={() => onClickMusicTrack(track.music_zone_id, index)}
-          key={track.id}
-          className="border px-4 border-gray-300 mb-1 bg-white w-[500px] h-[70px] flex  items-center gap-4"
-        >
-          <img className="w-[50px] h-[50px]" src={track.thumbnail_url} />
-          <div className="flex-1">
-            <h1>{track.title}</h1>
-            <h1>{track.artist}</h1>
+      <div className="flex-1 flex flex-col">
+        {data?.trackData.map((track, index) => (
+          <div
+            key={track.id}
+            className="border px-4 flex border-gray-300 mb-1 rounded-md shadow cursor-default h-[70px]"
+          >
+            <TrackItem track={track} onClickMusicTrack={onClickMusicTrack} />
           </div>
-
-          {track.time && <p>{track.time}</p>}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

@@ -13,13 +13,18 @@ import { insertTable, updateTable } from "../../service/tableService";
 import { useNavigate } from "react-router-dom";
 import useModalStore from "../../store/modalStore";
 import ImageInput from "../ImageInput";
+import { musicZoneRow } from "../../types/supabase";
+
+interface IModifyMusicZoneModal {
+  musicZoneData: musicZoneRow;
+}
 
 interface IformValues {
   zone_name: string;
   description: string;
 }
 
-function MusicZoneModal() {
+function ModifyMusicZoneModal({ musicZoneData }: IModifyMusicZoneModal) {
   const [file, setFile] = useState<File | null>(null);
   const { openLoading, closeLoading } = useloadingStore();
   const { userTable } = useSessionStore();
@@ -32,13 +37,18 @@ function MusicZoneModal() {
 
     const user_id = userTable!.id;
     const tableName = "musiczone";
-    const insertValue = {
+    const update = {
       ...formData,
       user_id,
     };
     const bucketName = "image";
-    const tableData = await insertTable({ tableName, insertValue });
-    const folderPath = `${user_id}/${tableData.id}`;
+    const tableData = await updateTable({
+      tableName,
+      eqKey: "id",
+      eqValue: musicZoneData.id,
+      update,
+    });
+    const folderPath = `${user_id}/${musicZoneData.id}`;
     const fileName = "musiczone_img";
 
     await createFolder({ bucketName, path: folderPath });
@@ -59,7 +69,7 @@ function MusicZoneModal() {
       if (publicUrl) {
         await updateTable({
           eqKey: "id",
-          eqValue: tableData.id,
+          eqValue: musicZoneData.id,
           tableName,
           update: { musiczone_img: publicUrl },
         });
@@ -67,7 +77,7 @@ function MusicZoneModal() {
     }
 
     closeLoading();
-    navigate(`ModifyMusicZone/${user_id}/${tableData.id}`);
+    navigate(`ModifyMusicZone/${user_id}/${musicZoneData.id}`);
     closeModal();
   }
 
@@ -79,13 +89,11 @@ function MusicZoneModal() {
         "p-6 flex flex-col rounded-lg shadow-lg justify-center gap-4 min-w-[300px] items-center",
       ].join(" ")}
     >
-      <h1 className="font-bold text-xl">뮤직존 추가</h1>
+      <h1 className="font-bold text-xl">뮤직존 수정</h1>
       <div className="w-[200px] h-[200px]">
         <ImageInput
           setFile={setFile}
-          imagePreview={
-            "https://smydpnzfrremvfutiaro.supabase.co/storage/v1/object/public/image/default/default_music.png"
-          }
+          imagePreview={musicZoneData.musiczone_img}
         />
       </div>
       <div className="flex flex-col w-full gap-2">
@@ -93,18 +101,21 @@ function MusicZoneModal() {
           className="p-2 text-sm border rounded-sm text-text-primary"
           {...register("zone_name", {
             required: "이름을 입력해주세요",
+            value: musicZoneData.zone_name,
           })}
           placeholder="이름을 입력해주세요"
         />
         <textarea
           className="p-2 text-sm border rounded-sm text-text-primary resize-none"
-          {...register("description")}
+          {...register("description", {
+            value: musicZoneData.description ? musicZoneData.description : "",
+          })}
           placeholder="설명을 입력해주세요"
         />
       </div>
       <div className="w-full flex flex-col">
         <OutlineButton text="text-blue-400" onClick={() => {}}>
-          만들기
+          수정하기
         </OutlineButton>
         <OutlineButton text="text-red-400" type="button" onClick={closeModal}>
           취소
@@ -114,4 +125,4 @@ function MusicZoneModal() {
   );
 }
 
-export default MusicZoneModal;
+export default ModifyMusicZoneModal;

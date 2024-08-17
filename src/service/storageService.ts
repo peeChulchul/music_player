@@ -21,6 +21,8 @@ interface IexistFileArgs extends IstorageArgs {
   fileName: string;
 }
 
+interface IdeleteFolderArgs extends IstorageArgs {}
+
 export async function createFolder({ bucketName, path }: IstorageArgs) {
   const { data, error } = await supabase.storage
     .from(bucketName)
@@ -108,4 +110,34 @@ export async function ExistsFile({
     throw new Error("파일이 존재하지않습니다.");
   }
   return fileExists;
+}
+
+export async function deleteFolder({ bucketName, path }: IdeleteFolderArgs) {
+  const { data: files, error: listError } = await supabase.storage
+    .from(bucketName)
+    .list(path);
+
+  console.log(files);
+  if (listError) {
+    console.error("Error listing files:", listError);
+    return null;
+  }
+
+  if (files.length === 0) {
+    console.log("Folder is already empty or does not exist.");
+    return null;
+  }
+  const pathsToDelete = files.map((file) => `${path}/${file.name}`);
+
+  const { error: deleteError } = await supabase.storage
+    .from(bucketName)
+    .remove(pathsToDelete);
+
+  if (deleteError) {
+    console.error("Error deleting files:", deleteError);
+    return null;
+  }
+
+  console.log("Folder and its contents deleted successfully.");
+  return true;
 }

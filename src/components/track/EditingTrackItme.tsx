@@ -8,10 +8,10 @@ import UrlModal from "../portal/UrlModal";
 
 interface ItrackItemProps {
   track: trackRow;
-  index: number;
   setIsEditing: Dispatch<SetStateAction<boolean>>;
   imagePreview: string;
   setImagePreview: Dispatch<SetStateAction<string>>;
+  index: number;
 }
 
 function EditingTrackItme({
@@ -19,19 +19,16 @@ function EditingTrackItme({
   setIsEditing,
   imagePreview,
   setImagePreview,
+  index,
 }: ItrackItemProps) {
   const [title, setTitle] = useState<string>(track.title);
   const [artist, setArtist] = useState<string>(track.artist || "");
   const [file, setFile] = useState<File | null>(null);
-  const [urlData, setUrlData] = useState<string>("");
+  const [urlData, setUrlData] = useState<string>(track.track_url);
   const [duration, setDuration] = useState<string>(track.time || "");
 
-  const { setTrackList, trackList } = useTrackContext();
+  const { setTrackList } = useTrackContext();
   const { openModal } = useModalStore();
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    e.stopPropagation();
-  };
 
   function onClickCheckBtn() {
     const track_url = urlData.trim() === "" ? track.track_url : urlData;
@@ -51,6 +48,7 @@ function EditingTrackItme({
             time: duration,
             file,
             track_url,
+            index,
             artist: artist.trim() === "" ? track.artist : artist,
             thumbnail_url: imagePreview,
           };
@@ -79,8 +77,8 @@ function EditingTrackItme({
 
   return (
     <div
-      className="flex w-full h-full items-center gap-4 cursor-default"
-      onPointerDown={handlePointerDown}
+      onMouseDown={(e) => e.stopPropagation()}
+      className="flex w-full h-[70px] items-center gap-4 cursor-default"
     >
       <div className="w-[50px] h-[50px]">
         <ImageInput
@@ -89,7 +87,7 @@ function EditingTrackItme({
           imagePreview={imagePreview}
         />
       </div>
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col gap-2">
         <input
           onKeyDown={(e) => {
             if (e.key === " ") {
@@ -103,6 +101,7 @@ function EditingTrackItme({
             setTitle(e.target.value);
           }}
           placeholder="제목을 입력해주세요"
+          className="text-text-primary  bg-transparent text-sm outline-none rounded-sm"
         />
         <input
           onKeyDown={(e) => {
@@ -114,6 +113,7 @@ function EditingTrackItme({
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
           placeholder="아티스트"
+          className="text-text-secondary  bg-transparent text-xs outline-none rounded-sm"
         />
       </div>
       <LinkIcon
@@ -122,14 +122,16 @@ function EditingTrackItme({
             <UrlModal setUrlData={setUrlData} setDuration={setDuration} />
           )
         }
-        className="w-[25px] h-full cursor-pointer"
+        className="w-[20px] h-full text-layouy-dark cursor-pointer"
       />
+      {urlData && title && (
+        <CheckIcon
+          className="w-[20px] h-full text-layouy-dark cursor-pointer"
+          onClick={onClickCheckBtn}
+        />
+      )}
 
-      <CheckIcon
-        className="w-[25px] h-full cursor-pointer"
-        onClick={onClickCheckBtn}
-      />
-      {duration.trim() !== "" && <p>{duration}</p>}
+      {duration.trim() !== "" && <p className="text-sm">{duration}</p>}
     </div>
   );
 }

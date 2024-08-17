@@ -1,14 +1,22 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { musicZoneRow } from "../types/supabase";
-import { getAllTable } from "../service/tableService";
+import { getAllTable, getEqTable, getNeqTable } from "../service/tableService";
 import useloadingStore from "../store/loadingStore";
 import { useNavigate } from "react-router-dom";
+import useSessionStore from "../store/sessionStore";
+import MusicZoneItem from "../components/MusicZoneItem";
+
+interface IfetchMusicZoneTavle {
+  usersMusicZone: musicZoneRow[] | null;
+  allMusicTableData: musicZoneRow[];
+}
 
 function Home() {
   const { openLoading, closeLoading } = useloadingStore();
+  const { session } = useSessionStore();
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery<musicZoneRow[]>({
+  const { data, isLoading, refetch } = useQuery<IfetchMusicZoneTavle>({
     queryKey: ["home"],
     queryFn: () => fetchMusicZoneTable(),
   });
@@ -20,24 +28,64 @@ function Home() {
     }
   }, [isLoading]);
 
+  useEffect(() => {
+    if (session) refetch();
+  }, [session]);
+
   async function fetchMusicZoneTable() {
-    const result = await getAllTable({ tableName: "musiczone" });
-    console.log(result);
-    return result as musicZoneRow[];
+    let allMusicTableData;
+    let usersMusicZone = null;
+
+    if (session) {
+      allMusicTableData = (await getEqTable({
+        eqKey: "id",
+        eqValue: session.user.id,
+        tableName: "musiczone",
+      })) as musicZoneRow[];
+
+      usersMusicZone = (await getNeqTable({
+        eqKey: "id",
+        eqValue: session.user.id,
+        tableName: "musiczone",
+      })) as musicZoneRow[];
+
+      return { usersMusicZone, allMusicTableData };
+    }
+
+    allMusicTableData = (await getAllTable({
+      tableName: "musiczone",
+    })) as musicZoneRow[];
+
+    return { usersMusicZone, allMusicTableData };
   }
 
   if (isLoading) return null;
 
+  console.log(data);
+
   return (
     <>
-      {data?.map((musicZone) => (
-        <div
-          onClick={() => navigate(`DetailMusicZone/${musicZone.id}`)}
-          key={musicZone.id}
-        >
-          {musicZone.zone_name}
-        </div>
-      ))}
+      <div>
+        {data?.usersMusicZone && (
+          <>
+            <h1>My Music Zone</h1>
+            {data?.usersMusicZone.map((musicZone) => (
+              <MusicZoneItem
+                musicZoneData={musicZone}
+                onClickMusicZone={() =>
+                  navigate(`DetailMusicZone/${musicZone.id}`)
+                }
+              />
+              // <div
+              //   onClick={() => navigate(`DetailMusicZone/${musicZone.id}`)}
+              //   key={musicZone.id}
+              // >
+              //   {musicZone.zone_name}
+              // </div>
+            ))}
+          </>
+        )}
+      </div>
     </>
   );
 }

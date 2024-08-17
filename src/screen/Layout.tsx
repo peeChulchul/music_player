@@ -9,7 +9,7 @@ function Layout() {
     <div className="min-h-screen w-full bg-main-bg text-text-primary  flex flex-col">
       <Header />
       {/* <Sidebar /> */}
-      <div className="mb-[56px] flex-1 flex">
+      <div className="mb-[56px] flex-1 flex p-4">
         <Outlet />
       </div>
       <MusicBar />

@@ -9,15 +9,17 @@ import AuthModal from "../portal/AuthModal";
 import { signOut } from "../../service/authService";
 import ProfileModal from "../portal/ProfileModal";
 import Avatar from "../Avatar";
-import MusicZoneModal from "../portal/MusicZoneModal";
+import CreateMusicZoneModal from "../portal/CreateMusicZoneModal";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const [open, setOpen] = useState<boolean>(false);
   const { userTable } = useSessionStore();
   const { openModal } = useModalStore();
+  const navigate = useNavigate();
 
   async function onClickCreateZone() {
-    openModal(<MusicZoneModal />);
+    openModal(<CreateMusicZoneModal />);
   }
 
   function onClickProfile() {
@@ -42,7 +44,12 @@ function Header() {
   }, [open]);
 
   return (
-    <div className="flex z-10 py-2 bg-layout-dark text-text-primary items-center pl-2 pr-4 sticky top-0">
+    <div className="flex gap-4 z-10 py-2 bg-layout-dark text-text-primary items-center pl-2 pr-4 sticky top-0">
+      <img
+        onClick={() => navigate("")}
+        src="https://smydpnzfrremvfutiaro.supabase.co/storage/v1/object/public/image/default/default_logo.png?t=2024-08-10T07%3A01%3A47.402Z"
+        className="object-contain w-[70px] h-[45px] cursor-pointer"
+      />
       <form className="flex w-[480px] bg-bg-secondary rounded-md overflow-hidden items-center py-1 px-2">
         <input className="flex-1 bg-inherit outline-none" />
         <MagnifyingGlassIcon className="w-5 h-5 rounded cursor-pointer" />

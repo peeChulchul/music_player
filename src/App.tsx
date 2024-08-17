@@ -23,8 +23,13 @@ function Router() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         closeLoading();
-
-        if (event === "SIGNED_IN") {
+        console.log(session);
+        console.log(event);
+        if (session) {
+          if (event === "SIGNED_OUT") {
+            clerSession();
+            return;
+          }
           getEqTable({
             eqKey: "id",
             eqValue: session!.user.id,
@@ -33,10 +38,6 @@ function Router() {
             setUserTable(rows[0]);
             setSession(session);
           });
-          return;
-        }
-        if (event === "SIGNED_OUT") {
-          clerSession();
           return;
         }
       }

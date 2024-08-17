@@ -19,7 +19,7 @@ function MusicBar() {
   const { isPlaying, musicZoneId, index, setIsPlaying } =
     usePlayingMusicStore();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(index);
-  const [playList, setPlayList] = useState<string[]>([]);
+  const [playList, setPlayList] = useState<trackRow[]>([]);
   // const { data, isLoading } = useQuery<trackRow[]>({
   //   queryKey: ["musicZone", musicZoneId],
   //   queryFn: fetchMusicZoneTable,
@@ -33,6 +33,28 @@ function MusicBar() {
     }
   }, [musicZoneId]);
 
+  useEffect(() => {
+    setCurrentVideoIndex(index);
+  }, [index]);
+
+  useEffect(() => {
+    if (playList.length === 0) return;
+    setCurrentVideoIndex(0);
+    setIsPlaying(true);
+    setProgress(0);
+  }, [playList]);
+
+  useEffect(() => {
+    if (progress === 1) {
+      if (playList.length - 1 === currentVideoIndex) {
+        setIsPlaying(false);
+        return;
+      }
+
+      setCurrentVideoIndex((prev) => prev + 1);
+    }
+  }, [progress]);
+
   async function fetchMusicZoneTable() {
     const trackData = (await getEqTable({
       eqKey: "music_zone_id",
@@ -42,7 +64,8 @@ function MusicBar() {
 
     const trackList = trackData.map((data) => {
       const { track_url, ...arg } = data;
-      return track_url;
+      // return track_url;
+      return data;
     });
     setPlayList(trackList);
     return trackData;
@@ -59,7 +82,11 @@ function MusicBar() {
   }
 
   const handleProgress = useCallback((state: { played: number }) => {
-    setProgress(state.played);
+    if (state.played >= 1 && currentVideoIndex === playList.length - 1) {
+      setProgress(1);
+    } else {
+      setProgress(state.played);
+    }
   }, []);
 
   const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,53 +95,87 @@ function MusicBar() {
     setProgress(parseFloat(e.target.value));
   }, []);
 
-  console.log(playList[index]);
+  const handleEnded = useCallback(() => {
+    if (currentVideoIndex < playList.length - 1) {
+      setCurrentVideoIndex((prev) => prev + 1);
+    } else {
+      setIsPlaying(false);
+      setProgress(1);
+    }
+  }, [currentVideoIndex, playList.length, setIsPlaying]);
 
   return (
-    <div className="fixed z-10 bottom-0 left-0 right-0 bg-gray-800 text-white p-4 flex items-center justify-between">
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={() => console.log("Previous")}
-          className="focus:outline-none"
-        >
-          <BackwardIcon className="h-6 w-6" />
-        </button>
-        <button onClick={handlePlayPause} className="focus:outline-none">
-          {isPlaying ? (
-            <PauseIcon className="h-6 w-6" />
-          ) : (
-            <PlayIcon className="h-6 w-6" />
-          )}
-        </button>
-        <button
-          onClick={() => console.log("Next")}
-          className="focus:outline-none"
-        >
-          <ForwardIcon className="h-6 w-6" />
-        </button>
-        <p className="text-xs whitespace-nowrap">
-          {formatTime(duration * progress)} / {formatTime(duration)}
-        </p>
+    <div className="fixed z-10 bottom-0 left-0 right-0 bg-gray-800 text-white">
+      <div className="flex relative w-full py-4 px-6 h-[60px] justify-between">
+        <div className="w-full absolute top-0 left-0 right-0 cursor-pointer">
+          <div className="bg-gray-600 h-1 rounded-full">
+            <div
+              className="bg-blue-500 h-1 rounded-full"
+              style={{ width: `${progress * 100}%` }}
+            />
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={progress}
+            onChange={handleSeek}
+            className="absolute inset-0 w-full opacity-0 cursor-pointer"
+          />
+        </div>
+
+        <div className="flex flex-1 items-center gap-4 mr-10">
+          <button
+            onClick={() => console.log("Previous")}
+            className="focus:outline-none"
+          >
+            <BackwardIcon className="h-7" />
+          </button>
+          <button onClick={handlePlayPause} className="focus:outline-none">
+            {isPlaying ? (
+              <PauseIcon className="h-7" />
+            ) : (
+              <PlayIcon className="h-7" />
+            )}
+          </button>
+          <button
+            onClick={() => console.log("Next")}
+            className="focus:outline-none"
+          >
+            <ForwardIcon className="h-7" />
+          </button>
+          <p className="text-xs whitespace-nowrap">
+            {formatTime(duration * progress)} / {formatTime(duration)}
+          </p>
+        </div>
+
+        {playList[currentVideoIndex] && (
+          <div className="flex flex-1 items-center gap-4">
+            <img
+              className="w-[40px] h-[40px]"
+              src={playList[currentVideoIndex]?.thumbnail_url}
+            />
+            <div className="flex flex-col">
+              <p className="text-s">{playList[currentVideoIndex]?.title}</p>
+              <p className="text-s">{playList[currentVideoIndex]?.artist}</p>
+            </div>
+          </div>
+        )}
+        <div className="flex-1"></div>
       </div>
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={progress}
-        onChange={handleSeek}
-        className="w-full mx-4 cursor-pointer"
-      />
+
       <ReactPlayer
         ref={playerRef}
-        url={playList[index]}
+        url={playList[currentVideoIndex]?.track_url}
         playing={isPlaying}
-        onReady={() => setReady(true)}
+        onReady={() =>
+          playerRef.current?.getDuration &&
+          setDuration(playerRef.current.getDuration())
+        }
         onDuration={setDuration}
         onProgress={handleProgress}
-        onEnded={() => {
-          setIsPlaying(false);
-        }}
+        onEnded={handleEnded}
         onError={(e) => console.log("Error occurred: ", e)}
         height="0"
         width="0"
