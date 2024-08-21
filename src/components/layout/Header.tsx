@@ -93,7 +93,7 @@ function Header() {
               onClick={onClickCreateZone}
               className="px-4 py-2 hover:bg-bg-secondary cursor-pointer"
             >
-              Zone생성하기(임시)
+              MusicZone 만들기
             </li>
             <li
               onClick={signOut}

@@ -61,28 +61,28 @@ function Home() {
 
   if (isLoading) return null;
 
-  console.log(data);
-
   return (
     <>
       <div>
         {data?.usersMusicZone && (
           <>
             <h1>My Music Zone</h1>
-            {data?.usersMusicZone.map((musicZone) => (
-              <MusicZoneItem
-                musicZoneData={musicZone}
-                onClickMusicZone={() =>
-                  navigate(`DetailMusicZone/${musicZone.id}`)
-                }
-              />
-              // <div
-              //   onClick={() => navigate(`DetailMusicZone/${musicZone.id}`)}
-              //   key={musicZone.id}
-              // >
-              //   {musicZone.zone_name}
-              // </div>
-            ))}
+            <div className="flex gap-4">
+              {data?.usersMusicZone.map((musicZone) => (
+                <MusicZoneItem
+                  musicZoneData={musicZone}
+                  onClickMusicZone={() =>
+                    navigate(`DetailMusicZone/${musicZone.id}`)
+                  }
+                />
+                // <div
+                //   onClick={() => navigate(`DetailMusicZone/${musicZone.id}`)}
+                //   key={musicZone.id}
+                // >
+                //   {musicZone.zone_name}
+                // </div>
+              ))}
+            </div>
           </>
         )}
       </div>

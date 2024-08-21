@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import {
   closestCenter,
   DndContext,
@@ -15,9 +15,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useTrackContext } from "../../store/trackContext";
-import EditingAbleTrackItem from "./EditingAbleTrackItem";
+import EditingAbleTrackList from "./EditingAbleTrackList";
 
-function TrackList() {
+function DndContainer() {
   const { setTrackList, trackList } = useTrackContext();
   const sensors = useSensors(
     useSensor(KeyboardSensor, {
@@ -48,11 +48,11 @@ function TrackList() {
     >
       <SortableContext items={trackList} strategy={verticalListSortingStrategy}>
         {trackList.map((track, index) => (
-          <EditingAbleTrackItem key={track.id} track={track} index={index} />
+          <EditingAbleTrackList key={track.id} track={track} index={index} />
         ))}
       </SortableContext>
     </DndContext>
   );
 }
 
-export default TrackList;
+export default DndContainer;

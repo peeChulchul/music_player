@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-import Signup from "src/components/auth/SignUp";
+import Signup from "src/components/SignUp";
 import styles from "src/style/modal.module.css";
-import Login from "src/components/auth/Login";
+import Login from "src/components/Login";
 
 function AuthModal() {
   const [isLoginPage, setIsLoginPage] = useState<boolean>(true);

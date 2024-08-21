@@ -1,37 +1,33 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { IsignUpFormInput } from "src/types/auth";
+import { useForm } from "react-hook-form";
 import styles from "src/style/authForm.module.css";
-import { signUp } from "src/service/authService";
-import useModalStore from "../../store/modalStore";
-import { OutlineButton } from "../ui/Button";
-
-interface IsignUpProps {
+import { IloginFormInput, IsignUpFormInput } from "../types/auth";
+import useModalStore from "../store/modalStore";
+import { signIn } from "../service/authService";
+import { OutlineButton } from "./ui/Button";
+interface IloginProps {
   setIsLoginPage: Dispatch<SetStateAction<boolean>>;
 }
 
-function SignUp({ setIsLoginPage }: IsignUpProps) {
+function Login({ setIsLoginPage }: IloginProps) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isValid },
-  } = useForm<IsignUpFormInput>({ mode: "onChange" });
+  } = useForm<IloginFormInput>({ mode: "onChange" });
 
   const { closeModal } = useModalStore();
 
-  const onSubmit = async (data: IsignUpFormInput) => {
+  const onSubmit = async (data: IloginFormInput) => {
     console.log("Submitted Data:", data);
-    const { email, password, username } = data;
-    await signUp(email, password, username);
+    const { email, password } = data;
+    await signIn(email, password);
     closeModal();
   };
 
-  const password = watch("password");
-
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <h1 className={styles.form_title}>회원가입</h1>
+      <h1 className={styles.form_title}>로그인</h1>
       <div className={styles.input_wrapper}>
         <label className={styles.input_label} htmlFor="email">
           이메일
@@ -54,27 +50,7 @@ function SignUp({ setIsLoginPage }: IsignUpProps) {
         )}
       </div>
 
-      <div className={styles.input_wrapper}>
-        <label className={styles.input_label} htmlFor="username">
-          이름
-        </label>
-        <input
-          className={styles.input}
-          id="username"
-          {...register("username", {
-            required: "사용하실 이름을 입력해주세요",
-            pattern: {
-              value: /^[a-zA-Z0-9가-힣]{2,}$/,
-              message: "2자 이상의 문자, 숫자 또는 한글을 입력해주세요.",
-            },
-          })}
-        />
-        {errors.username && (
-          <p className={styles.input_error}>{errors.username.message}</p>
-        )}
-      </div>
-
-      <div className={styles.input_wrapper}>
+      <div className={[styles.input_wrapper, "mb-2"].join(" ")}>
         <label className={styles.input_label} htmlFor="password">
           비밀번호
         </label>
@@ -103,35 +79,16 @@ function SignUp({ setIsLoginPage }: IsignUpProps) {
         )}
       </div>
 
-      <div className={[styles.input_wrapper, "mb-2"].join(" ")}>
-        <label className={styles.input_label} htmlFor="confirmPassword">
-          비밀번호 확인
-        </label>
-        <input
-          className={styles.input}
-          id="confirmPassword"
-          type="password"
-          {...register("confirmPassword", {
-            required: "비밀번호를 확인해주세요",
-            validate: (value) =>
-              value === password || "비밀번호가 일치하지 않습니다.",
-          })}
-        />
-        {errors.confirmPassword && (
-          <p className={styles.input_error}>{errors.confirmPassword.message}</p>
-        )}
-      </div>
-
-      <OutlineButton type="submit">회원가입</OutlineButton>
+      <OutlineButton type="submit">로그인</OutlineButton>
       <OutlineButton
         text="text-blue-500"
         border="border-transparent"
-        onClick={() => setIsLoginPage(true)}
+        onClick={() => setIsLoginPage(false)}
       >
-        로그인
+        회원가입
       </OutlineButton>
     </form>
   );
 }
 
-export default SignUp;
+export default Login;

@@ -1,12 +1,17 @@
 /* eslint-disable no-restricted-globals */
 
 import React, { useEffect, useState } from "react";
-import { musicZoneRow, trackRow, trackRowWithFile } from "../types/supabase";
+import {
+  musicZoneRow,
+  trackRow,
+  trackRowWithFile,
+  UserRow,
+} from "../types/supabase";
 import useloadingStore from "../store/loadingStore";
 import { useParams } from "react-router-dom";
 import { getEqTable, upsertTable } from "../service/tableService";
 import { useQuery } from "@tanstack/react-query";
-import TrackList from "../components/track/TrackList";
+import DndContainer from "../components/track/DndContainer";
 import { Button, OutlineButton } from "../components/ui/Button";
 import { v4 } from "uuid";
 import { useTrackContext } from "../store/trackContext";
@@ -14,24 +19,21 @@ import { getPublicUrl, uploadFile } from "../service/storageService";
 import MusicZoneHeader from "../components/MusicZoneHeader";
 import useSessionStore from "../store/sessionStore";
 import { PlusIcon, FolderPlusIcon } from "@heroicons/react/24/outline";
-
-interface IfetchMusicZoneTableResult {
-  musicZoneData: musicZoneRow;
-  trackData: trackRow[];
-}
+import { IfetchMusicZoneResult } from "../types/query";
 
 function AddMusicZone() {
   const { openLoading, closeLoading } = useloadingStore();
   const { musicZoneId } = useParams();
-  const { data, error, isLoading, refetch } =
-    useQuery<IfetchMusicZoneTableResult>({
-      queryKey: ["musiczone", musicZoneId],
-      queryFn: () => fetchMusicZoneTable(),
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    });
+  const { data, error, isLoading, refetch } = useQuery<IfetchMusicZoneResult>({
+    queryKey: ["musiczone", musicZoneId],
+    queryFn: () => fetchMusicZoneTable(),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
   const { userTable } = useSessionStore();
-  const [musicZoneData, setMusicZoneData] = useState<musicZoneRow>();
+  const [musicZoneData, setMusicZoneData] = useState<musicZoneRow | undefined>(
+    data?.musicZoneData
+  );
   const { trackList, setTrackList } = useTrackContext();
 
   useEffect(() => {
@@ -59,7 +61,11 @@ function AddMusicZone() {
     setTrackList(trackDataWithFiles);
     setMusicZoneData(musicZoneData[0]);
 
-    return { musicZoneData: musicZoneData[0], trackData };
+    return {
+      musicZoneData: musicZoneData[0],
+      trackData,
+      userData: userTable as UserRow,
+    };
   }
 
   async function saveMusicZoneHandler() {
@@ -86,7 +92,6 @@ function AddMusicZone() {
                 fileName,
                 path,
               });
-              console.log(publicUrl);
               return { ...trackItems, thumbnail_url: publicUrl };
             }
             return { ...trackItems };
@@ -99,26 +104,25 @@ function AddMusicZone() {
           tableName: "musictrack",
           upsertValue: newTrackList,
         });
-        console.log(upsertResult);
       }
       await refetch();
       closeLoading();
     }
   }
 
-  if (isLoading || !musicZoneData) return null;
+  if (isLoading) return null;
 
   return (
     <div className="flex flex-1">
       <MusicZoneHeader
-        musicZoneData={musicZoneData}
+        musicZoneData={musicZoneData!}
         userData={userTable!}
         trackLength={trackList.length}
       />
 
       <div className={"flex-1 pr-10 h-[calc(100vh-149px)]"}>
         <div className="h-[calc(100%-110px)] overflow-y-auto scrollbar-hide">
-          <TrackList />
+          <DndContainer />
         </div>
         <div className="text-center flex flex-col sticky bottom-0">
           <OutlineButton
@@ -129,7 +133,7 @@ function AddMusicZone() {
                 {
                   id: v4(),
                   index: null,
-                  music_zone_id: musicZoneData.id!,
+                  music_zone_id: musicZoneData!.id!,
                   thumbnail_url:
                     "https://smydpnzfrremvfutiaro.supabase.co/storage/v1/object/public/image/default/default_music.png",
                   title: "",

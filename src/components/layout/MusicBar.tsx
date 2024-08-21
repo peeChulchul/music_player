@@ -16,7 +16,7 @@ function MusicBar() {
   const playerRef = useRef<ReactPlayer | null>(null);
   const [duration, setDuration] = useState<number>(0);
   const [ready, setReady] = useState<boolean>(false);
-  const { isPlaying, musicZoneId, index, setIsPlaying } =
+  const { isPlaying, musicZoneId, index, setIsPlaying, selectPlayingMusic } =
     usePlayingMusicStore();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(index);
   const [playList, setPlayList] = useState<trackRow[]>([]);
@@ -64,7 +64,6 @@ function MusicBar() {
 
     const trackList = trackData.map((data) => {
       const { track_url, ...arg } = data;
-      // return track_url;
       return data;
     });
     setPlayList(trackList);
@@ -104,6 +103,21 @@ function MusicBar() {
     }
   }, [currentVideoIndex, playList.length, setIsPlaying]);
 
+  function handlePrev() {
+    if (index === 0) return;
+
+    setCurrentVideoIndex((prev) => prev - 1);
+    selectPlayingMusic({ index: index - 1, trackId: playList[index - 1].id });
+  }
+
+  function handleNext() {
+    if (index === playList.length - 1) return;
+    setCurrentVideoIndex((prev) => prev + 1);
+    selectPlayingMusic({ index: index + 1, trackId: playList[index + 1].id });
+  }
+
+  if (playList.length === 0) return null;
+
   return (
     <div className="fixed z-10 bottom-0 left-0 right-0 bg-gray-800 text-white">
       <div className="flex relative w-full py-4 px-6 h-[60px] justify-between">
@@ -126,12 +140,10 @@ function MusicBar() {
         </div>
 
         <div className="flex flex-1 items-center gap-4 mr-10">
-          <button
-            onClick={() => console.log("Previous")}
-            className="focus:outline-none"
-          >
+          <button onClick={handlePrev} className="focus:outline-none">
             <BackwardIcon className="h-7" />
           </button>
+
           <button onClick={handlePlayPause} className="focus:outline-none">
             {isPlaying ? (
               <PauseIcon className="h-7" />
@@ -139,12 +151,10 @@ function MusicBar() {
               <PlayIcon className="h-7" />
             )}
           </button>
-          <button
-            onClick={() => console.log("Next")}
-            className="focus:outline-none"
-          >
+          <button onClick={handleNext} className="focus:outline-none">
             <ForwardIcon className="h-7" />
           </button>
+
           <p className="text-xs whitespace-nowrap">
             {formatTime(duration * progress)} / {formatTime(duration)}
           </p>

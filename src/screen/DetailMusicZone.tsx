@@ -7,24 +7,18 @@ import useloadingStore from "../store/loadingStore";
 import usePlayingMusicStore from "../store/playingMusicStore";
 import MusicZoneHeader from "../components/MusicZoneHeader";
 import TrackItem from "../components/track/TrackItem";
-import useSessionStore from "../store/sessionStore";
-
-interface IfetchMusicZoneTableResult {
-  musicZoneData: musicZoneRow;
-  trackData: trackRow[];
-  userData: UserRow;
-}
+import { IfetchMusicZoneResult } from "../types/query";
 
 function DetailMusicZone() {
   const { musicZoneId } = useParams();
   const { openLoading, closeLoading } = useloadingStore();
-  const { data, isLoading } = useQuery<IfetchMusicZoneTableResult>({
-    queryKey: ["musicZone", musicZoneId],
+  const { data, isLoading } = useQuery<IfetchMusicZoneResult>({
+    queryKey: ["musiczone", musicZoneId],
     queryFn: fetchMusicZoneTable,
   });
-  const { session } = useSessionStore();
 
-  const { selectPlayingMusic, setIsPlaying } = usePlayingMusicStore();
+  const { selectPlayingMusic, setIsPlaying, isPlaying } =
+    usePlayingMusicStore();
 
   useEffect(() => {
     openLoading();
@@ -34,9 +28,17 @@ function DetailMusicZone() {
     }
   }, [isLoading]);
 
-  function onClickMusicTrack(musicZoneId: string, index: number) {
-    selectPlayingMusic(musicZoneId, index);
-    setIsPlaying(true);
+  function onClickMusicTrack({
+    musicZoneId,
+    index,
+    trackId,
+  }: {
+    musicZoneId: string;
+    index: number;
+    trackId: string;
+  }) {
+    selectPlayingMusic({ musicZoneId, index, trackId });
+    setIsPlaying(!isPlaying);
   }
 
   async function fetchMusicZoneTable() {
@@ -65,8 +67,6 @@ function DetailMusicZone() {
     };
   }
 
-  console.log(data);
-
   if (isLoading) return null;
   return (
     <div className="flex w-full">
@@ -74,16 +74,14 @@ function DetailMusicZone() {
         trackLength={data?.trackData.length!}
         userData={data?.userData!}
         musicZoneData={data?.musicZoneData!}
+        trackId={data?.trackData[0]?.id}
       />
 
       <div className="flex-1 flex flex-col">
         {data?.trackData.map((track, index) => (
-          <div
-            key={track.id}
-            className="border px-4 flex border-gray-300 mb-1 rounded-md shadow cursor-default h-[70px]"
-          >
-            <TrackItem track={track} onClickMusicTrack={onClickMusicTrack} />
-          </div>
+          // <div className=" mb-1 rounded-md shadow cursor-pointer ">
+          <TrackItem track={track} key={track.id} />
+          // </div>
         ))}
       </div>
     </div>

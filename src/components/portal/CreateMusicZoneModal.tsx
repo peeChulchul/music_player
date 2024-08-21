@@ -90,6 +90,7 @@ function CreateMusicZoneModal() {
       </div>
       <div className="flex flex-col w-full gap-2">
         <input
+          maxLength={24}
           className="p-2 text-sm border rounded-sm text-text-primary"
           {...register("zone_name", {
             required: "이름을 입력해주세요",

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { trackRow } from "../../types/supabase";
 import ImageInput from "../ImageInput";
 import { useTrackContext } from "../../store/trackContext";
@@ -60,25 +60,10 @@ function EditingTrackItme({
     setIsEditing(false);
   }
 
-  useEffect(() => {
-    if (file) {
-      setTrackList((trackList) => {
-        const newTrackList = trackList.map((trackData) => {
-          if (trackData.id === track.id) {
-            return { ...trackData, file };
-          }
-          return trackData;
-        });
-
-        return newTrackList;
-      });
-    }
-  }, [file]);
-
   return (
     <div
       onMouseDown={(e) => e.stopPropagation()}
-      className="flex w-full h-[70px] items-center gap-4 cursor-default"
+      className="flex px-4 w-full h-[70px] items-center gap-4 cursor-default border border-red-300 mb-1 rounded-md shadow"
     >
       <div className="w-[50px] h-[50px]">
         <ImageInput
